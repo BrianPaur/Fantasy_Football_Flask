@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="jumbotron">
+  <h1>All Data</h1>
+    <table class="table table-sm table-hover table-striped" data-filter-control="true">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Team Name</th>
+          <th scope="col">week</th>
+          <th scope="col">Points Scored</th>
+          <th scope="col">Points Against</th>
+          <th scope="col">MOV</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for items in items %}
+        <tr>
+          <td>{{ items.team_name }}</td>
+          <td>{{ items.week }}</td>
+          <td>{{ items.points_scored }}</td>
+          <td>{{ items.points_against }}</td>
+          <td>{{ items.mov }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+

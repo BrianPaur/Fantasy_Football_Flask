@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="jumbotron">
+  <h1>Standings</h1>
+    <table class="table table-sm table-hover table-striped" data-filter-control="true">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Team Name</th>
+          <th scope="col">Wins</th>
+          <th scope="col">Losses</th>
+          <th scope="col">Points Scored</th>
+          <th scope="col">Points Against</th>
+          <th scope="col">MOV</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for stand in stand %}
+        <tr>
+          <td>{{ stand.team_name }}</td>
+          <td>{{ stand.wins }}</td>
+          <td>{{ stand.losses }}</td>
+          <td>{{ stand.Total_Points_Scored|round(2,'floor') }}</td>
+          <td>{{ stand.Total_Points_Against|round(2,'floor') }}</td>
+          <td>{{ stand.AVG_MOV|round(2,'floor') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+
