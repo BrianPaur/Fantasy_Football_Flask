@@ -3,6 +3,7 @@ from FF_Project import db
 from FF_Project.models import FantastyFootball
 import sqlite3
 from espn_api.football import League
+import pandas as pd
 
 core = Blueprint('core',__name__)
 
