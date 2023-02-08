@@ -53,27 +53,21 @@ def all_data():
 
 @core.route('/badluckindex')
 def bad_luck_index():
-    engine = db.create_engine('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
-    connection = engine.connect()
-    metadata = db.MetaData()
-    table_read = db.Table("fantasyfootballdata",
-                          metadata,
-                          autoload=True,
-                          autoload_with=engine,
-                          )
-    query = db.select([table_read])
-    query_results = connection.execute(query)
-    query_set = query_results.fetchall()
 
-    df = pd.read_sql("SELECT * FROM fantasyfootballdata", connection)
-    df_average = df.groupby('opponent').agg(mean_score=('points_scored','mean')).reset_index()
-    inner_join = pd.merge(df,
-                          df_average,
-                          on='opponent',
-                          how='left')
-    inner_join['luck_index'] = inner_join['mean_score'] - inner_join['points_against']
-    luck_index = inner_join.groupby('team_name').agg(luck_index=('luck_index','sum')).reset_index().sort_values(by='luck_index')
+    conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
+    conn.row_factory = sqlite3.Row
+    bad_luck = conn.execute("SELECT a.team_name AS team_name, ROUND(SUM((a.points_against - b.average_points_scored)),2) AS total_luck_index "
+                         "FROM fantasyfootballdata a "
+                         "LEFT JOIN "
+                         "(SELECT team_name, AVG(points_scored) AS average_points_scored "
+                         "FROM fantasyfootballdata "
+                         "GROUP BY team_name "
+                         "ORDER BY average_points_scored) AS b "
+                         "ON a.opponent = b.team_name "
+                         "GROUP BY a.team_name "
+                         "ORDER BY total_luck_index;").fetchall()
+    conn.close()
 
-    return render_template('bad_luck_table.html', tables=[luck_index.to_html(classes='data')],titles=luck_index.columns.values)
+    return render_template('bad_luck_index.html', bad_luck=bad_luck)
     
 

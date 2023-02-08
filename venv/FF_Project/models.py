@@ -26,11 +26,3 @@ class FantastyFootball(db.Model):
         self.points_scored = points_scored
         self.points_against = points_against
         self.mov = mov
-
-class BadLuckIndex(db.Model):
-
-    __tablename__ = 'badluckindex'
-
-    id = db.Column(db.Integer, primary_key=True)
-    team_name = db.Column(db.Text)
-    bad_luck_index = db.Column(db.REAL)
