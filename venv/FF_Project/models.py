@@ -26,3 +26,19 @@ class FantastyFootball(db.Model):
         self.points_scored = points_scored
         self.points_against = points_against
         self.mov = mov
+
+class Activity_Tracker(db.Model):
+
+    __tablename__ = 'activity'
+
+    id = db.Column(db.Integer, primary_key=True)
+    team_name = db.Column(db.Text)
+    action_taken = db.Column(db.Text)
+    player_name = db.Column(db.Text)
+    readable_date = db.Column(db.Text)
+
+    def __init__(self, team_name, action_taken, player_name, readable_date):
+        self.team_name = team_name
+        self.action_taken = action_taken
+        self.player_name = player_name
+        self.readable_date = readable_date

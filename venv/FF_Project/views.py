@@ -1,9 +1,10 @@
-from flask import render_template,url_for,flash,redirect, Blueprint
+from flask import Flask,render_template,url_for,flash,redirect, Blueprint
 from FF_Project import db
 from FF_Project.models import FantastyFootball
 import sqlite3
 from espn_api.football import League
 import pandas as pd
+import os
 
 core = Blueprint('core',__name__)
 
@@ -56,7 +57,8 @@ def bad_luck_index():
 
     conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
     conn.row_factory = sqlite3.Row
-    bad_luck = conn.execute("SELECT a.team_name AS team_name, ROUND(SUM((a.points_against - b.average_points_scored)),2) AS total_luck_index "
+    bad_luck = conn.execute(""
+                         "SELECT a.team_name AS team_name, ROUND(SUM((b.average_points_scored - a.points_against)),2) AS total_luck_index "
                          "FROM fantasyfootballdata a "
                          "LEFT JOIN "
                          "(SELECT team_name, AVG(points_scored) AS average_points_scored "
@@ -65,9 +67,27 @@ def bad_luck_index():
                          "ORDER BY average_points_scored) AS b "
                          "ON a.opponent = b.team_name "
                          "GROUP BY a.team_name "
-                         "ORDER BY total_luck_index;").fetchall()
+                         "ORDER BY total_luck_index DESC;").fetchall()
     conn.close()
 
     return render_template('bad_luck_index.html', bad_luck=bad_luck)
+@core.route('/graph')
+def graph():
+    pass
+@core.route('/player_profile')
+def player_profile():
+    pass
+@core.route('/trade_activity')
+def trade_activity():
+    conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
+    conn.row_factory = sqlite3.Row
+    items = conn.execute('SELECT * FROM activity').fetchall()
+    conn.close()
+    return render_template('trade_activity.html', items=items)
+@core.route('/side_bets')
+def side_bets():
+    pass
+
+
     
 

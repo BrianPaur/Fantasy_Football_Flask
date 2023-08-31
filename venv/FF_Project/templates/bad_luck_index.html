@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="jumbotron">
+  <h1>Bad Luck Table</h1>
+    <table class="table table-sm table-hover table-striped" data-filter-control="true">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Team Name</th>
+          <th scope="col">Bad Luck Index</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for bad_luck in bad_luck %}
+        <tr>
+          <td>{{ bad_luck.team_name }}</td>
+          <td>{{ bad_luck.total_luck_index }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+
