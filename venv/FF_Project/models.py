@@ -12,6 +12,7 @@ class FantastyFootball(db.Model):
     __tablename__ = 'fantasyfootballdata'
 
     id = db.Column(db.Integer, primary_key=True)
+    season = db.Column(db.Integer)
     team_name = db.Column(db.Text)
     opponent = db.Column(db.Text)
     week = db.Column(db.Integer)
@@ -19,7 +20,8 @@ class FantastyFootball(db.Model):
     points_against = db.Column(db.REAL)
     mov = db.Column(db.REAL)
 
-    def __init__(self, team_name, opponent, week, points_scored, points_against, mov):
+    def __init__(self, season, team_name, opponent, week, points_scored, points_against, mov):
+        self.season = season
         self.team_name = team_name
         self.opponent = opponent
         self.week = week
@@ -32,12 +34,14 @@ class Activity_Tracker(db.Model):
     __tablename__ = 'activity'
 
     id = db.Column(db.Integer, primary_key=True)
+    season = db.Column(db.Integer)
     team_name = db.Column(db.Text)
     action_taken = db.Column(db.Text)
     player_name = db.Column(db.Text)
     readable_date = db.Column(db.Text)
 
-    def __init__(self, team_name, action_taken, player_name, readable_date):
+    def __init__(self, season, team_name, action_taken, player_name, readable_date):
+        self.season = season
         self.team_name = team_name
         self.action_taken = action_taken
         self.player_name = player_name

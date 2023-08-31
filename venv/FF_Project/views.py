@@ -1,6 +1,7 @@
 from flask import Flask,render_template,url_for,flash,redirect, Blueprint
 from FF_Project import db
 from FF_Project.models import FantastyFootball
+from FF_Project.creds import year
 import sqlite3
 from espn_api.football import League
 import pandas as pd
@@ -16,12 +17,14 @@ def standings():
                      "a AS "
                      "(SELECT team_name, SUM(points_scored) AS Total_Points_Scored, SUM(points_against) AS Total_Points_Against, AVG(mov) AS AVG_MOV "
                      "FROM fantasyfootballdata "
+                     f"WHERE season = {year} "
                      "GROUP BY team_name), "
                      ""
                      "b AS "
                      "(SELECT team_name, COUNT(mov) AS wins "
                      "FROM fantasyfootballdata "
                      "WHERE mov > 0 "
+                     f"AND season = {year} "
                      "GROUP BY team_name "
                      "ORDER BY wins DESC), "
                      ""
@@ -29,6 +32,7 @@ def standings():
                      "(SELECT team_name, COUNT(mov) AS losses "
                      "FROM fantasyfootballdata "
                      "WHERE mov < 0 "
+                     f"AND season = {year} "
                      "GROUP BY team_name "
                      "ORDER BY losses DESC) "
                      ""
@@ -66,6 +70,7 @@ def bad_luck_index():
                          "GROUP BY team_name "
                          "ORDER BY average_points_scored) AS b "
                          "ON a.opponent = b.team_name "
+                         f"WHERE season = {year} "
                          "GROUP BY a.team_name "
                          "ORDER BY total_luck_index DESC;").fetchall()
     conn.close()
@@ -81,7 +86,7 @@ def player_profile():
 def trade_activity():
     conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
     conn.row_factory = sqlite3.Row
-    items = conn.execute('SELECT * FROM activity').fetchall()
+    items = conn.execute(f"SELECT * FROM activity WHERE season = {year}").fetchall()
     conn.close()
     return render_template('trade_activity.html', items=items)
 @core.route('/side_bets')
