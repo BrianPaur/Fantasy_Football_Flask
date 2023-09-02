@@ -1,18 +1,23 @@
 import datetime
 import pandas as pd
 from FF_Project import app, db
-from FF_Project.models import FantastyFootball, Activity_Tracker
+from FF_Project.models import FantastyFootball, Activity_Tracker,Roster
+from FF_Project.creds import lg_id,espn_s2,swid,year
 import sqlite3
 from espn_api.football import League
+from espn_api.football.constant import POSITION_MAP
+from espn_api.requests.espn_requests import EspnFantasyRequests
+from espn_api.utils.logger import Logger
 
 class DataPulls():
-    def __init__(self,league_id,league_year,espn_s2,swid,standings_data=None,activity_data=None, activity_amount=1000):
+    def __init__(self,league_id,league_year,espn_s2,swid,standings_data=None,activity_data=None,roster_data=None,activity_amount=1000):
         self.league_id=league_id
         self.league_year=league_year
         self.espn_s2=espn_s2
         self.swid=swid
         self.standings_data=standings_data
         self.activity_data=activity_data
+        self.roster_data=roster_data
         self.activity_amount=activity_amount
 
     def standings_pull(self):
@@ -116,3 +121,55 @@ class DataPulls():
         else:
             db.session.add(self.activity_data)
             db.session.commit()
+
+    def roster_pull(self):
+        self.db_clear_roster_data_commit()
+        espnrequest = EspnFantasyRequests(sport='nfl', year=year, league_id=lg_id, cookies=None,
+                                          logger=Logger(name='nfl league', debug=False)).get_league()
+
+        team_extract = {key: espnrequest[key] for key in espnrequest.keys()
+                        & {'teams'}}
+
+        for i in range(0, len(team_extract['teams'])):
+            for x in range(0, len(team_extract['teams'][i]['roster']['entries']) - 1):
+                team_abbr = team_extract['teams'][i]['abbrev']
+                team_name = team_extract['teams'][i]['name']
+                team_id = team_extract['teams'][i]['roster']['entries'][x]['playerPoolEntry']['onTeamId']
+                player_id = team_extract['teams'][i]['roster']['entries'][x]['playerId']
+                player_name = team_extract['teams'][i]['roster']['entries'][x]['playerPoolEntry']['player']['fullName']
+                position = POSITION_MAP.get(int(team_extract['teams'][i]['roster']['entries'][x]['playerPoolEntry']['player'][
+                    'defaultPositionId']))
+                position_ranking = team_extract['teams'][i]['roster']['entries'][x]['playerPoolEntry']['ratings']['0'][
+                    'positionalRanking']
+                injury_status = team_extract['teams'][i]['roster']['entries'][x]['injuryStatus']
+                acquisition_type = team_extract['teams'][i]['roster']['entries'][x]['acquisitionType']
+                acquisition_date = datetime.datetime.fromtimestamp(team_extract['teams'][i]['roster']['entries'][x]['acquisitionDate']/ 1000).strftime('%m-%d-%Y %H:%M:%S')
+                # roster = [team_pos, team_id, player_id, player_name, position, position_ranking, injury_status,
+                #           acquisition_type, acquisition_date]
+                # print(roster)
+                self.roster_data = Roster(team_abbr=team_abbr,
+                                          team_name=team_name,
+                                          team_id=team_id,
+                                          player_id=player_id,
+                                          player_name=player_name,
+                                          position=position,
+                                          position_ranking=position_ranking,
+                                          injury_status=injury_status,
+                                          acquisition_type=acquisition_type,
+                                          acquisition_date=acquisition_date)
+
+                self.db_roster_pull_commit(self.roster_data)
+
+    def db_roster_pull_commit(self,data):
+        conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
+        conn.row_factory = sqlite3.Row
+        db.session.add(data)
+        db.session.commit()
+
+    def db_clear_roster_data_commit(self):
+        conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
+        conn.row_factory = sqlite3.Row
+        clear = conn.execute('DELETE FROM roster')
+        conn.commit()
+        conn.close()
+

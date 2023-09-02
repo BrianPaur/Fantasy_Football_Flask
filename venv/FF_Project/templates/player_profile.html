@@ -1,4 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
 
+
+    <div class="jumbotron">
+            <div align='left'>
+                <h1>{{ team_id_name.team_name }}'s team page</h1>
+            </div>
+    </div>
+    <div class="container">
+        <table class="table table-sm table-hover table-striped" data-filter-control="true">
+            <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Team Abbr</th>
+                  <th scope="col">Player Name</th>
+                  <th scope="col">Position</th>
+                  <th scope="col">Position Ranking</th>
+                  <th scope="col">Injury Status</th>
+                  <th scope="col">Acquisition Type</th>
+                  <th scope="col">Acquisition Date</th>
+                </tr>
+            </thead>
+          <tbody>
+          {% for roster in roster %}
+            <tr>
+              <td>{{ roster.team_abbr }}</td>
+              <td>{{ roster.player_name }}</td>
+              <td>{{ roster.position }}</td>
+              <td>{{ roster.position_ranking }}</td>
+              <td>{{ roster.injury_status }}</td>
+              <td>{{ roster.acquisition_type }}</td>
+              <td>{{ roster.acquisition_date }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+
 {% endblock %}

@@ -46,3 +46,31 @@ class Activity_Tracker(db.Model):
         self.action_taken = action_taken
         self.player_name = player_name
         self.readable_date = readable_date
+
+class Roster(db.Model):
+
+    __tablename__ = 'roster'
+
+    id = db.Column(db.Integer, primary_key=True)
+    team_abbr = db.Column(db.Text)
+    team_name = db.Column(db.Text)
+    team_id = db.Column(db.Integer)
+    player_id = db.Column(db.Integer)
+    player_name = db.Column(db.Text)
+    position = db.Column(db.Text)
+    position_ranking = db.Column(db.Integer)
+    injury_status = db.Column(db.Text)
+    acquisition_type = db.Column(db.Text)
+    acquisition_date = db.Column(db.Text)
+
+    def __init__(self, team_abbr,team_name,team_id,player_id,player_name,position,position_ranking,injury_status,acquisition_type,acquisition_date):
+        self.team_abbr = team_abbr
+        self.team_name = team_name
+        self.team_id = team_id
+        self.player_id = player_id
+        self.player_name = player_name
+        self.position = position
+        self.position_ranking=position_ranking
+        self.injury_status=injury_status
+        self.acquisition_type=acquisition_type
+        self.acquisition_date=acquisition_date

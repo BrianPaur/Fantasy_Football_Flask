@@ -1,7 +1,7 @@
-from flask import Flask,render_template,url_for,flash,redirect, Blueprint
+from flask import Flask,render_template,url_for,flash,redirect, request, Blueprint
 from FF_Project import db
 from FF_Project.models import FantastyFootball
-from FF_Project.creds import year
+from FF_Project.creds import lg_id,espn_s2,swid,year
 import sqlite3
 from espn_api.football import League
 import pandas as pd
@@ -79,9 +79,29 @@ def bad_luck_index():
 @core.route('/graph')
 def graph():
     pass
-@core.route('/player_profile')
-def player_profile():
-    pass
+@core.route('/<id>')
+def player_profile(id):
+
+    conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
+    conn.row_factory = sqlite3.Row
+
+    #gets team id for url
+    team_id = FantastyFootball.query.filter_by(id=id)
+
+    team_id_name = conn.execute(f"SELECT team_name FROM roster WHERE team_id = {id}").fetchone()
+
+    #roster
+    roster = conn.execute(f"SELECT * FROM roster WHERE team_id = {id}").fetchall()
+
+    conn.close()
+
+    # current week
+
+    #biggest blowout
+
+    #biggest lose
+
+    return render_template('player_profile.html', team_id_name=team_id_name, team_id=team_id, roster=roster)
 @core.route('/trade_activity')
 def trade_activity():
     conn = sqlite3.connect('C:/Users/Brian/PycharmProjects/Fantasy_Football_Flask/venv/FF_Project/data.sqlite')
