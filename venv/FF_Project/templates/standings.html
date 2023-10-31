@@ -7,6 +7,7 @@
       <thead class="thead-dark">
         <tr>
           <th scope="col">Team Name</th>
+          <th scope="col">Team Abbrev</th>
           <th scope="col">Wins</th>
           <th scope="col">Losses</th>
           <th scope="col">Points Scored</th>
@@ -17,12 +18,13 @@
       <tbody>
       {% for stand in stand %}
         <tr>
-          <td>{{ stand.team_name }}</td>
+          <td><a href="{{ url_for('core.player_profile', abbrev=stand.abbrev) }}">{{ stand.team_name }}</a></td>
+          <td>{{ stand.abbrev }}</td>
           <td>{{ stand.wins }}</td>
           <td>{{ stand.losses }}</td>
-          <td>{{ stand.Total_Points_Scored|round(2,'floor') }}</td>
-          <td>{{ stand.Total_Points_Against|round(2,'floor') }}</td>
-          <td>{{ stand.AVG_MOV|round(2,'floor') }}</td>
+          <td>{{ stand.points_scored|round(2,'floor') }}</td>
+          <td>{{ stand.points_against|round(2,'floor') }}</td>
+          <td>{{ (stand.mov / current_week)|round(2,'floor')}}</td>
         </tr>
       {% endfor %}
       </tbody>
